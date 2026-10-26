@@ -11,6 +11,8 @@ The output has:
 - **Pan & zoom** across the canvas
 - **An inspector** for nodes and edges
 - **A step-through player** that animates runtime flows (how a request moves through the system)
+- **Dark and light themes** — a switch in the top bar; the reader's choice is remembered
+- **Search and shortcuts** — <kbd>/</kbd> to find a part, <kbd>?</kbd> for every key
 
 Everything lives in one HTML file you can open in any browser, commit, or share.
 

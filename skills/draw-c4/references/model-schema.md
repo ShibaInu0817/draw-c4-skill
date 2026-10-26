@@ -161,15 +161,18 @@ orchestrator hub whose successive cues share only the orchestrator node.
 
 ## Kinds
 
+Every part is drawn as a card with its kind's icon. The colour tints the card in
+the dark theme and the icon tile in the light theme.
+
 | kind | colour | use for |
 |---|---|---|
 | `person` | rose | Human roles. Context level only. |
 | `client` | amber | Things a person operates: web app, mobile app, CLI. |
-| `focus` | amber, filled | The system under discussion on a context diagram. Usually exactly one, with `drill` set. |
-| `service` | white | Something that runs. The default. |
-| `component` | white | A part inside a container. Component levels only. |
+| `focus` | amber, outlined | The system under discussion on a context diagram. Usually exactly one, with `drill` set. |
+| `service` | white (ink in light) | Something that runs. The default. |
+| `component` | white (ink in light) | A part inside a container. Component levels only. |
 | `store` | teal | Databases, caches, object storage, search indexes. |
-| `queue` | lavender, filled | Brokers, topics, streams. |
+| `queue` | lavender | Brokers, topics, streams. |
 | `external` | grey, dashed | Third parties, and anything across the boundary being drawn. |
 
 An unknown kind falls back to `service` and `check` warns.
