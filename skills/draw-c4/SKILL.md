@@ -59,10 +59,12 @@ rebuilt — which is what makes updating cheap.
 
 1. **Read the code before writing anything.** See "Reading a codebase" below. Do
    not start from the README's architecture section alone; it is usually stale.
-2. **Write the model** to `model.json`. Omit `x`/`y` — the layout step supplies
-   them.
-3. **Lay it out:** `python3 "$SKILL/scripts/plot.py" layout model.json --all`
-4. **Check it:** `python3 "$SKILL/scripts/plot.py" check model.json` — clear every **error**
+2. **Let the user choose the flows and the levels.** See "Let the user choose
+   what to draw" below. Do not write any flows or component levels before this.
+3. **Write the model** to `model.json`, with what was chosen and nothing else.
+   Omit `x`/`y` — the layout step supplies them.
+4. **Lay it out:** `python3 "$SKILL/scripts/plot.py" layout model.json --all`
+5. **Check it:** `python3 "$SKILL/scripts/plot.py" check model.json` — clear every **error**
    before moving on. It catches the mistakes that are easy to make and
    invisible afterwards: an edge pointing at a node id that does not exist, a
    flow cue with no matching edge, a drill target that was renamed.
@@ -72,14 +74,14 @@ rebuilt — which is what makes updating cheap.
    `check`; a wrong diagram that validates cleanly is worse than a right one that
    warns. The shipped `$SKILL/assets/example-model.json` emits two such warnings by
    design.
-5. **Tune the placement.** Auto-layout guarantees nothing overlaps; it does not
+6. **Tune the placement.** Auto-layout guarantees nothing overlaps; it does not
    guarantee the diagram reads well. Nudge coordinates so the shape of the
    picture matches the shape of the system — clients on the left, stores beside
    the service that owns them, the event bus spanning its consumers. Compare
    against `$SKILL/assets/example-model.json`, which is hand-placed. Re-run `check`
    after nudging.
-6. **Build:** `python3 "$SKILL/scripts/plot.py" build model.json architecture.html`
-7. Keep `model.json` next to the HTML and tell the user to keep it — it is the
+7. **Build:** `python3 "$SKILL/scripts/plot.py" build model.json architecture.html`
+8. Keep `model.json` next to the HTML and tell the user to keep it — it is the
    source, and the next update starts from it.
 
 ## Workflow: updating an existing diagram
@@ -90,6 +92,9 @@ rebuilt — which is what makes updating cheap.
    what is new, what is gone, what was renamed, what changed direction.
 3. Edit the JSON. When something is deleted, delete its edges and any flow cues
    that used them too — `check` will otherwise report them, which is the point.
+   When the change makes a **new** flow or a new component level possible, offer
+   it with the same choice as a new diagram (below); do not add it unasked. Keep
+   every flow and level the user already has, updated, without asking again.
 4. `python3 "$SKILL/scripts/plot.py" layout model.json` — with no `--all`, this keeps
    every existing coordinate and parks only the new parts in a spare column on
    the right. Move them into place deliberately; do not leave them stacked.
@@ -97,6 +102,47 @@ rebuilt — which is what makes updating cheap.
 
 Preserving coordinates matters. A diagram someone has read a few times has a
 shape they remember, and reshuffling it on every update destroys that.
+
+## Let the user choose what to draw
+
+Flows and component levels are where most of the work goes, and which ones are
+worth drawing depends on what the reader needs, not only on what the code
+contains. So after reading the code, and before writing the model, offer the
+candidates and let the user choose.
+
+**What to offer.** Two short lists, each built from the code you just read:
+
+- **Runtime flows** — every path worth replaying: the happy paths, and the
+  sideways ones (a timeout, a retry, a dead letter, a refusal). One line each:
+  a name, the path in a few hops (`webhook → Kafka → workflow → inbox`), and
+  whether it is a happy path or a failure.
+- **Parts that can open** — the containers that could get their own component
+  level, each with one line on what the reader would see inside it and roughly
+  how many parts. A container whose inside is three boxes in a row is not a
+  candidate; leave it off the list rather than offering padding.
+
+Mark your recommendation in each list (two to four flows; the one or two
+containers where the interesting logic lives), and **always include an "all of
+them" choice** in each. Some users want the complete picture, and that is a
+legitimate answer, not a mistake to talk them out of.
+
+**How to ask.** Use the AskUserQuestion tool when it is available: one
+multi-select question for flows and one for levels, recommended options first
+and labelled "(Recommended)", plus an "All flows" / "All of them" option. The
+tool takes at most four options per question, so when there are more candidates,
+group them (for example "Connect flows (4)", "Receive flows (5)") and say in the
+option's description what each group holds. Without the tool, print both lists
+numbered and ask the user to reply with numbers, "recommended", or "all".
+
+**When not to ask.** Skip the question when the user has already said what they
+want ("diagram the whole thing", "just the containers, no flows", "add the send
+flow") — do exactly that. Skip the level question when there is nothing worth
+opening. And do not ask again about anything the user has already chosen.
+
+**After they answer**, draw exactly what was chosen. If "all" means more than
+about eight flows on one level, say so plainly and draw them anyway; the flow
+list scrolls. Mention what was left out, in one line, when you deliver the
+diagram, so the user can ask for it later.
 
 ## Reading a codebase
 
@@ -171,9 +217,10 @@ replays a real path through the system one hop at a time.
 
 Find them by following a route handler through to its effects, by reading
 integration or end-to-end tests, by reading an orchestrator or saga class, or by
-tracing what a message consumer does. Two to four flows is right: the main happy
-path, plus at least one that shows something going sideways — a timeout, an
-expiry, a retry, a compensation.
+tracing what a message consumer does. The user picks which ones get drawn (see
+"Let the user choose what to draw"); when you mark recommendations, two to four
+is right: the main happy path, plus at least one that shows something going
+sideways — a timeout, an expiry, a retry, a compensation.
 
 Each cue names one edge that already exists at that level, plus:
 
