@@ -222,6 +222,14 @@ tracing what a message consumer does. The user picks which ones get drawn (see
 is right: the main happy path, plus at least one that shows something going
 sideways — a timeout, an expiry, a retry, a compensation.
 
+Give every flow a `group`, the folder it sits in on the left rail, named by
+the area of the system it belongs to: `Connection`, `Messaging`, `Billing`.
+Two to five groups; one flow can be a group of its own. Do not group by happy
+versus failure — mark a flow that shows something going wrong with
+`"path": "failure"` instead, which gives it an amber dot. When you offer flows
+to choose from, use the same groups, so what the user picks is what they will
+see.
+
 Each cue names one edge that already exists at that level, plus:
 
 - `title` — three or four words, the name of the step.
