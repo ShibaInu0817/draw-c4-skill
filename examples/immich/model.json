@@ -778,6 +778,7 @@
       "name": "Back up a photo",
       "level": "containers",
       "meta": "12 cues · happy path",
+      "group": "Photos",
       "cues": [
         {
           "from": "mobile",
@@ -858,6 +859,7 @@
       "name": "Search in your own words",
       "level": "containers",
       "meta": "4 cues · no job queue involved",
+      "group": "Photos",
       "cues": [
         {
           "from": "web",
@@ -890,6 +892,7 @@
       "name": "One job, then the next",
       "level": "jobs.components",
       "meta": "11 cues · the orchestrator",
+      "group": "Jobs",
       "cues": [
         {
           "from": "x-redis",
@@ -964,6 +967,8 @@
       "name": "A face waits for a crowd",
       "level": "jobs.components",
       "meta": "9 cues · deferred and retried",
+      "group": "Jobs",
+      "path": "failure",
       "cues": [
         {
           "from": "x-redis",

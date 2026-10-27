@@ -148,21 +148,27 @@
     color:var(--chalk-faint);margin:0 0 12px;
   }
 
-  .flow-btn{
-    display:block;width:100%;text-align:left;
-    padding:9px 10px;margin-bottom:4px;border-radius:2px;
-    border-left:2px solid transparent;
-    line-height:1.25;
-  }
+  /* flows: each folder is one block, flows are rows split by hairlines */
+  .flow-head{display:flex;align-items:center;justify-content:space-between;}
+  .flow-head button{font:500 11px var(--font-ui);letter-spacing:0;text-transform:none;color:var(--chalk-faint);padding:2px 5px;border-radius:4px;}
+  .flow-head button:hover{color:var(--chalk);background:var(--panel);}
+  .fgroup{border:1px solid var(--rule);border-radius:10px;overflow:hidden;margin-bottom:10px;}
+  .fg-head{display:flex;align-items:center;gap:8px;width:100%;padding:9px 12px;background:var(--panel);text-align:left;font-weight:700;font-size:13px;}
+  .fg-head .icon{width:14px;height:14px;color:var(--chalk-faint);transform:rotate(90deg);transition:transform .15s;}
+  .fgroup.closed .fg-head .icon{transform:none;}
+  .fg-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .fg-count{font:500 10.5px var(--font-mono);color:var(--chalk-faint);border:1px solid var(--rule);border-radius:999px;padding:0 7px;}
+  .fgroup.closed .fg-body{display:none;}
+  .flow-btn{display:block;width:100%;text-align:left;padding:10px 12px 10px 14px;line-height:1.3;transition:background .12s;}
+  .fg-head + .fg-body .flow-btn,.flow-btn + .flow-btn{border-top:1px solid var(--rule-soft);}
   .flow-btn:hover{background:var(--panel);}
-  .flow-btn.on{background:var(--panel);border-left-color:var(--accent);}
+  .flow-btn.on{background:color-mix(in srgb, var(--accent) 8%, var(--deep));box-shadow:inset 3px 0 0 var(--accent);}
   .flow-btn .fn{display:block;font-weight:600;font-size:13px;}
   .flow-btn.on .fn{color:var(--accent-ink);}
-  .flow-btn .fm{
-    display:block;
-    font-family:var(--font-mono);font-size:10.5px;color:var(--chalk-faint);
-    letter-spacing:.04em;margin-top:2px;
-  }
+  .flow-btn .fm{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10.5px;color:var(--chalk-faint);letter-spacing:.04em;margin-top:3px;white-space:nowrap;}
+  .flow-btn .fm span{overflow:hidden;text-overflow:ellipsis;}
+  .fdot{width:6px;height:6px;border-radius:50%;flex:none;background:var(--gel-teal);}
+  .fdot.fail{background:var(--gel-amber);}
 
   .key-row{display:flex;align-items:center;gap:9px;margin-bottom:9px;font-size:12px;color:var(--chalk-dim);}
 
@@ -343,11 +349,6 @@
   .shell.ins-off{grid-template-columns:var(--rail) 1fr 0;}
   .shell.rail-off.ins-off{grid-template-columns:0 1fr 0;}
   .shell.rail-off .rail,.shell.ins-off .inspector{overflow:hidden;border:0;padding:0;}
-  .flow-btn{border-radius:var(--r);border-left:0;position:relative;padding:9px 10px 10px 16px;transition:background .12s;}
-  .flow-btn::before{content:"";position:absolute;left:5px;top:10px;bottom:10px;width:3px;border-radius:3px;background:transparent;transition:background .12s;}
-  .flow-btn:hover::before{background:var(--rule);}
-  .flow-btn.on::before{background:var(--accent);}
-  .flow-btn .fm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .flow-prog{display:block;height:3px;background:var(--rule);border-radius:3px;margin-top:8px;overflow:hidden;}
   .flow-prog i{display:block;height:100%;background:var(--accent);transition:width .3s;}
   .key-row{border-radius:var(--r);padding:4px 6px;margin:0 -6px 2px;transition:background .12s,color .12s;}
@@ -428,7 +429,7 @@
 
   <aside class="rail" id="rail">
     <div class="rail-block">
-      <p class="eyebrow">Runtime flows</p>
+      <p class="eyebrow flow-head">Runtime flows <button id="flows-all" hidden></button></p>
       <div id="flow-list"></div>
     </div>
     <div class="rail-block">
@@ -511,6 +512,12 @@ const state = {
 let timer = null;
 
 /* The viewer's theme choice is remembered per browser; first visit follows the OS. */
+/* Which flow folders are shut is remembered per browser, per diagram. */
+const FOLDERS_KEY = 'draw-c4-folders:' + (MODEL.name || '');
+let closedFolders = new Set();
+try{ closedFolders = new Set(JSON.parse(localStorage.getItem(FOLDERS_KEY) || '[]')); }catch(_){}
+function saveFolders(){ try{ localStorage.setItem(FOLDERS_KEY, JSON.stringify([...closedFolders])); }catch(_){} }
+
 const THEME_KEY = 'draw-c4-theme';
 function setTheme(t, save){
   state.theme = t === 'light' ? 'light' : 'dark';
@@ -817,18 +824,60 @@ function renderCrumbs(){
   });
 }
 
+/* Flows sit in folders by their `group`; ungrouped ones go in a last "Other"
+   folder. A model with no groups at all gets one block with no header. */
+function flowFolders(){
+  const folders = new Map(), other = [];
+  MODEL.flows.forEach(f=>{
+    if(!f.group) return other.push(f);
+    if(!folders.has(f.group)) folders.set(f.group, []);
+    folders.get(f.group).push(f);
+  });
+  if(other.length) folders.set(folders.size ? 'Other' : '', other);
+  return folders;
+}
+function flowButton(f){
+  const b = document.createElement('button');
+  const on = state.flow===f.id;
+  b.className = 'flow-btn' + (on ? ' on' : '');
+  b.title = f.meta || '';
+  b.innerHTML = `<span class="fn">${f.name}</span><span class="fm"><i class="fdot${f.path==='failure' ? ' fail' : ''}"></i><span>${f.meta||''}</span></span>`
+    + (on ? `<span class="flow-prog"><i style="width:${(state.cue+1)/f.cues.length*100}%"></i></span>` : '');
+  b.onclick = ()=> state.flow===f.id ? stopFlow() : startFlow(f.id);
+  return b;
+}
 function renderRail(){
   const list = $('#flow-list'); list.innerHTML = '';
-  MODEL.flows.forEach(f=>{
-    const b = document.createElement('button');
-    const on = state.flow===f.id;
-    b.className = 'flow-btn' + (on ? ' on' : '');
-    b.title = f.meta;
-    b.innerHTML = `<span class="fn">${f.name}</span><span class="fm">${f.meta}</span>`
-      + (on ? `<span class="flow-prog"><i style="width:${(state.cue+1)/f.cues.length*100}%"></i></span>` : '');
-    b.onclick = ()=> state.flow===f.id ? stopFlow() : startFlow(f.id);
-    list.appendChild(b);
+  const folders = flowFolders();
+  let shown = 0;
+  folders.forEach((flows, name)=>{
+    // the folder holding the playing flow always shows it
+    const shut = name && closedFolders.has(name) && !flows.some(f=>f.id===state.flow);
+    const box = document.createElement('div');
+    box.className = 'fgroup' + (shut ? ' closed' : '');
+    if(name && !shut) shown++;
+    if(name){
+      const head = document.createElement('button');
+      head.className = 'fg-head';
+      head.setAttribute('aria-expanded', !shut);
+      head.innerHTML = `${ic('chev')}<span class="fg-name">${name}</span><span class="fg-count">${flows.length}</span>`;
+      head.onclick = ()=>{ closedFolders.has(name) ? closedFolders.delete(name) : closedFolders.add(name); saveFolders(); renderRail(); };
+      box.appendChild(head);
+    }
+    const body = document.createElement('div');
+    body.className = 'fg-body';
+    flows.forEach(f=> body.appendChild(flowButton(f)));
+    box.appendChild(body);
+    list.appendChild(box);
   });
+  const named = [...folders.keys()].filter(Boolean);
+  const all = $('#flows-all');
+  all.hidden = named.length < 2;
+  all.textContent = shown ? 'Collapse all' : 'Expand all';
+  all.onclick = ()=>{
+    if(shown) named.forEach(n=>closedFolders.add(n)); else closedFolders.clear();
+    saveFolders(); renderRail();
+  };
   const used = new Set(level().nodes.map(n=>n.kind));
   $('#key').innerHTML = Object.entries(MODEL.kinds).filter(([k])=>used.has(k))
     .map(([k,v])=>`<div class="key-row" data-kind="${k}">${kindIcon(k, v.color, 22)}${v.label}</div>`).join('')

@@ -120,6 +120,7 @@ Prefer one edge with a combined label.
   "name": "Buy a ticket",
   "level": "containers",
   "meta": "11 cues · happy path",
+  "group": "Ticketing",
   "cues": [ ]
 }
 ```
@@ -130,6 +131,8 @@ Prefer one edge with a combined label.
 | `name` | yes | Shown in the left rail. Name the outcome, not the mechanism: "Buy a ticket", not "POST /orders handler". |
 | `level` | yes | Selecting the flow switches to this level. |
 | `meta` | no | Grey line under the name. `"<n> cues · <character>"` reads well. |
+| `group` | no | The folder the flow sits in, in the left rail: `"Connection"`, `"Messaging"`. Flows with the same group are listed together; a flow with none goes in a last "Other" folder. Use two to five groups, named by area, not by happy or failure. |
+| `path` | no | `"failure"` for a path that shows something going wrong; it gets an amber dot instead of a teal one. Omit for a happy path. |
 | `cues` | yes | Ordered. Three to twelve is the useful range. |
 
 ## Cue
