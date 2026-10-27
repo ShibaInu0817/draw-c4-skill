@@ -849,13 +849,11 @@ function flowButton(f){
 function renderRail(){
   const list = $('#flow-list'); list.innerHTML = '';
   const folders = flowFolders();
-  let shown = 0;
   folders.forEach((flows, name)=>{
     // the folder holding the playing flow always shows it
     const shut = name && closedFolders.has(name) && !flows.some(f=>f.id===state.flow);
     const box = document.createElement('div');
     box.className = 'fgroup' + (shut ? ' closed' : '');
-    if(name && !shut) shown++;
     if(name){
       const head = document.createElement('button');
       head.className = 'fg-head';
@@ -873,9 +871,11 @@ function renderRail(){
   const named = [...folders.keys()].filter(Boolean);
   const all = $('#flows-all');
   all.hidden = named.length < 2;
-  all.textContent = shown ? 'Collapse all' : 'Expand all';
+  // judged by what the reader chose; a playing flow's folder is open regardless
+  const allShut = named.every(n=>closedFolders.has(n));
+  all.textContent = allShut ? 'Expand all' : 'Collapse all';
   all.onclick = ()=>{
-    if(shown) named.forEach(n=>closedFolders.add(n)); else closedFolders.clear();
+    if(allShut) closedFolders.clear(); else named.forEach(n=>closedFolders.add(n));
     saveFolders(); renderRail();
   };
   const used = new Set(level().nodes.map(n=>n.kind));
