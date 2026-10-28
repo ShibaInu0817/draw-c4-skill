@@ -51,7 +51,8 @@
   nav{display:flex;align-items:center;gap:18px;padding-block:16px;border-bottom:1px solid var(--rule)}
   .mark{display:flex;align-items:center;gap:8px;font-weight:800;letter-spacing:.06em;text-decoration:none}
   .mark svg{width:22px;height:22px}
-  .ver{font:500 11px var(--mono);border:1px solid var(--rule);border-radius:999px;padding:2px 8px;color:var(--faint)}
+  .ver{font:500 11px var(--mono);border:1px solid var(--rule);border-radius:999px;padding:2px 8px;color:var(--faint);text-decoration:none}
+  .ver:hover{color:var(--ink);border-color:var(--faint)}
   nav .sp{flex:1}
   nav a.link{font-size:14px;color:var(--dim);text-decoration:none}
   nav a.link:hover{color:var(--ink)}
@@ -104,7 +105,7 @@
 <div class="in">
   <nav>
     <a class="mark" href="./" aria-label="draw-c4 home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><path d="M10 6.5h4.5a2 2 0 0 1 2 2V14" stroke="var(--accent)"/></svg>DRAW-C4</a>
-    <span class="ver">v0.2.0</span>
+    <a class="ver" id="ver" href="https://github.com/ShibaInu0817/draw-c4-skill/commits/main" title="What changed">v0.2.0</a>
     <span class="sp"></span>
     <a class="link hide" href="examples/immich/architecture.html">Example</a>
     <a class="link hide" href="https://github.com/ShibaInu0817/draw-c4-skill#install">Install</a>
@@ -184,6 +185,9 @@ hero.addEventListener('timeupdate', () => {
   step.innerHTML = `Step ${i + 1} of ${STEPS.length} · <b>${STEPS[i]}</b>`;
 });
 if (still.matches) document.querySelectorAll('video').forEach(v => { v.controls = true; });
+
+// Read the version from the plugin manifest so the badge never goes stale; the markup holds a fallback.
+fetch('.claude-plugin/plugin.json').then(r => r.json()).then(m => { if (m.version) document.getElementById('ver').textContent = 'v' + m.version; }).catch(() => {});
 
 document.getElementById('copy').onclick = e => {
   const btn = e.currentTarget, text = document.getElementById('cmd').textContent.replace(/^\$\s*/, '').trim();
