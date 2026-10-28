@@ -120,6 +120,7 @@ Prefer one edge with a combined label.
   "name": "Buy a ticket",
   "level": "containers",
   "meta": "11 cues · happy path",
+  "group": "Ticketing",
   "cues": [ ]
 }
 ```
@@ -130,6 +131,8 @@ Prefer one edge with a combined label.
 | `name` | yes | Shown in the left rail. Name the outcome, not the mechanism: "Buy a ticket", not "POST /orders handler". |
 | `level` | yes | Selecting the flow switches to this level. |
 | `meta` | no | Grey line under the name. `"<n> cues · <character>"` reads well. |
+| `group` | no | The folder the flow sits in, in the left rail: `"Connection"`, `"Messaging"`. Flows with the same group are listed together; a flow with none goes in a last "Other" folder. Use two to five groups, named by area, not by happy or failure. |
+| `path` | no | `"failure"` for a path that shows something going wrong; it gets an amber dot instead of a teal one. Omit for a happy path. |
 | `cues` | yes | Ordered. Three to twelve is the useful range. |
 
 ## Cue
@@ -161,15 +164,18 @@ orchestrator hub whose successive cues share only the orchestrator node.
 
 ## Kinds
 
+Every part is drawn as a card with its kind's icon. The colour tints the card in
+the dark theme and the icon tile in the light theme.
+
 | kind | colour | use for |
 |---|---|---|
 | `person` | rose | Human roles. Context level only. |
 | `client` | amber | Things a person operates: web app, mobile app, CLI. |
-| `focus` | amber, filled | The system under discussion on a context diagram. Usually exactly one, with `drill` set. |
-| `service` | white | Something that runs. The default. |
-| `component` | white | A part inside a container. Component levels only. |
+| `focus` | amber, outlined | The system under discussion on a context diagram. Usually exactly one, with `drill` set. |
+| `service` | white (ink in light) | Something that runs. The default. |
+| `component` | white (ink in light) | A part inside a container. Component levels only. |
 | `store` | teal | Databases, caches, object storage, search indexes. |
-| `queue` | lavender, filled | Brokers, topics, streams. |
+| `queue` | lavender | Brokers, topics, streams. |
 | `external` | grey, dashed | Third parties, and anything across the boundary being drawn. |
 
 An unknown kind falls back to `service` and `check` warns.

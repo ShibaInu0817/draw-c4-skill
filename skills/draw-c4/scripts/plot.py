@@ -211,6 +211,8 @@ def validate(model):
             out.append(('error', f"flow '{f.get('id')}' targets missing level '{lid}'"))
             continue
         pairs = {(e.get('from'), e.get('to')) for e in L.get('edges', [])}
+        if f.get('path') not in (None, 'happy', 'failure'):
+            out.append(('warn', f"flow '{f.get('id')}' path should be 'failure' or omitted"))
         cues = f.get('cues', [])
         for i, cue in enumerate(cues, 1):
             if (cue.get('from'), cue.get('to')) not in pairs:

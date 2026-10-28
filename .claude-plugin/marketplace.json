@@ -8,7 +8,7 @@
       "name": "draw-c4",
       "source": "./",
       "description": "Generate/refresh a self-contained interactive C4 architecture diagram (HTML) from a codebase.",
-      "version": "0.1.0"
+      "version": "0.2.0"
     }
   ]
 }

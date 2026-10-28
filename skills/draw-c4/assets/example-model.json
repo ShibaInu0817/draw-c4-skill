@@ -682,6 +682,7 @@
       "name": "Buy a ticket",
       "level": "containers",
       "meta": "11 cues · happy path",
+      "group": "Buying",
       "cues": [
         {
           "from": "web",
@@ -756,6 +757,8 @@
       "name": "A hold lapses",
       "level": "containers",
       "meta": "3 cues · the timer wins",
+      "group": "Buying",
+      "path": "failure",
       "cues": [
         {
           "from": "inventory",
@@ -782,6 +785,7 @@
       "name": "Inside the checkout",
       "level": "orders.components",
       "meta": "7 cues · one container",
+      "group": "Buying",
       "cues": [
         {
           "from": "ctrl",
@@ -832,6 +836,7 @@
       "name": "Scan at the gate",
       "level": "containers",
       "meta": "4 cues · offline-tolerant",
+      "group": "At the venue",
       "cues": [
         {
           "from": "gateapp",
