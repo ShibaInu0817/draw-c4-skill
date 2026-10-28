@@ -2,103 +2,198 @@
 <!--
   Landing page for the GitHub Pages site, which exists to host the example
   diagrams. Not part of the skill. The README is the documentation; this page
-  deliberately says almost nothing so the two cannot drift apart.
+  says only enough to get someone to the example and the install command.
+
+  Colours and fonts are the diagram's own (Studio light, Night cards dark), so
+  the page looks like what the skill produces. The clips in docs/clips are
+  stills of examples/immich/architecture.html joined with crossfades; rebuild
+  them when the template changes.
 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>draw-c4 — examples</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>draw-c4</title>
+<meta name="description" content="A Claude Code skill that reads a codebase and writes an interactive C4 architecture diagram: one HTML file with levels to open and runtime flows to play.">
+<meta property="og:title" content="draw-c4">
+<meta property="og:description" content="Point it at a repo. Get a diagram you can walk through.">
+<meta property="og:image" content="https://shibainu0817.github.io/draw-c4-skill/docs/containers.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
+  /* Layout: one centred column; hero is text beside the playing flow, then three clips, then three steps. */
   :root{
-    --backdrop:#17141C; --deep:#1E1A26; --rule:#332C40;
-    --chalk:#EDE7DC; --chalk-dim:#9A92A8; --chalk-faint:#6A6379;
-    --amber:#F2A65A;
-    --font-display:"Barlow Condensed","Arial Narrow",sans-serif;
-    --font-ui:"Barlow",system-ui,sans-serif;
-    --font-mono:"IBM Plex Mono",ui-monospace,monospace;
+    --bg:#F4F5FD; --card:#FFFFFF; --rule:#D6DBF1; --ink:#141933; --dim:#414968; --faint:#596184;
+    --accent:#E8501B; --accent-ink:#B83D10; --on-accent:#FFFFFF; --code:#141933; --code-ink:#F4F6FA; --code-rule:#3A4152;
+    --shadow:0 24px 60px -30px rgba(20,25,51,.45);
+    --font:"Manrope",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
   }
-  *{box-sizing:border-box;}
-  body{
-    margin:0; padding:clamp(32px,7vw,80px) clamp(20px,6vw,40px);
-    background:var(--backdrop); color:var(--chalk);
-    font-family:var(--font-ui); font-size:15px; line-height:1.6;
-    -webkit-font-smoothing:antialiased;
-  }
-  .wrap{max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:40px;}
-  h1{
-    font-family:var(--font-display); font-weight:700; font-size:clamp(32px,7vw,44px);
-    letter-spacing:.14em; text-transform:uppercase; margin:0 0 6px;
-  }
-  .tag{font-family:var(--font-mono); font-size:11px; letter-spacing:.1em;
-       text-transform:uppercase; color:var(--chalk-faint); margin:0;}
-  .lede{color:var(--chalk-dim); margin:18px 0 0; max-width:60ch;}
-  h2{
-    font-family:var(--font-display); font-weight:700; font-size:12px;
-    letter-spacing:.18em; text-transform:uppercase; color:var(--chalk-faint);
-    margin:0 0 16px; padding-bottom:10px; border-bottom:1px solid var(--rule);
-  }
-  a.card{
-    display:block; text-decoration:none; color:inherit;
-    border:1px solid var(--rule); border-radius:3px; overflow:hidden;
-    background:var(--deep); transition:border-color .15s;
-  }
-  a.card:hover, a.card:focus-visible{border-color:var(--amber); outline:none;}
-  a.card img{display:block; width:100%; height:auto; border-bottom:1px solid var(--rule);}
-  .card-body{padding:16px 18px;}
-  .card-body b{
-    font-family:var(--font-display); font-weight:700; font-size:19px;
-    letter-spacing:.04em; display:block;
-  }
-  a.card:hover b{color:var(--amber);}
-  .card-body span{
-    font-family:var(--font-mono); font-size:10px; letter-spacing:.06em;
-    color:var(--chalk-faint); display:block; margin-top:3px;
-  }
-  .card-body p{color:var(--chalk-dim); font-size:14px; margin:10px 0 0;}
-  footer{
-    border-top:1px solid var(--rule); padding-top:20px;
-    font-family:var(--font-mono); font-size:11px; color:var(--chalk-faint);
-  }
-  footer a{color:var(--chalk-dim);}
-  footer a:hover{color:var(--amber);}
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+    --bg:#0B0D12; --card:#12151C; --rule:#272C38; --ink:#F4F6FA; --dim:#BCC3CF; --faint:#9EA6B5;
+    --accent:#FFA94D; --accent-ink:#FFA94D; --on-accent:#1A1206; --code:#1A1E28; --code-ink:#F4F6FA; --code-rule:#3A4152;
+    --shadow:0 24px 60px -30px rgba(0,0,0,.9);
+    --font:"Instrument Sans",system-ui,sans-serif; color-scheme:dark } }
+  :root[data-theme="dark"]{
+    --bg:#0B0D12; --card:#12151C; --rule:#272C38; --ink:#F4F6FA; --dim:#BCC3CF; --faint:#9EA6B5;
+    --accent:#FFA94D; --accent-ink:#FFA94D; --on-accent:#1A1206; --code:#1A1E28; --code-ink:#F4F6FA; --code-rule:#3A4152;
+    --shadow:0 24px 60px -30px rgba(0,0,0,.9);
+    --font:"Instrument Sans",system-ui,sans-serif; color-scheme:dark }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .in{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  img,video{display:block;max-width:100%}
+  a{color:inherit}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+  nav{display:flex;align-items:center;gap:18px;padding-block:16px;border-bottom:1px solid var(--rule)}
+  .mark{display:flex;align-items:center;gap:8px;font-weight:800;letter-spacing:.06em;text-decoration:none}
+  .mark svg{width:22px;height:22px}
+  .ver{font:500 11px var(--mono);border:1px solid var(--rule);border-radius:999px;padding:2px 8px;color:var(--faint);text-decoration:none}
+  .ver:hover{color:var(--ink);border-color:var(--faint)}
+  nav .sp{flex:1}
+  nav a.link{font-size:14px;color:var(--dim);text-decoration:none}
+  nav a.link:hover{color:var(--ink)}
+
+  .hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:clamp(24px,4vw,48px);align-items:center;padding-block:clamp(36px,6vw,72px) 28px}
+  h1{font-size:clamp(32px,4.6vw,52px);line-height:1.04;letter-spacing:-.03em;margin:0;text-wrap:balance}
+  h1 em{font-style:normal;color:var(--accent-ink)}
+  .lede{color:var(--dim);font-size:17px;margin:16px 0 0;max-width:46ch}
+  .cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14px;border-radius:8px;padding:11px 16px;text-decoration:none;border:1px solid var(--rule);color:var(--ink);background:var(--card);transition:transform .12s,border-color .12s}
+  .btn:hover{border-color:var(--faint);transform:translateY(-1px)}
+  .btn.pri{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+  .cmd{display:flex;align-items:center;gap:10px;margin-top:18px;background:var(--code);color:var(--code-ink);border-radius:8px;padding:10px 10px 10px 14px;font:13px var(--mono)}
+  .cmd code{flex:1;min-width:0;overflow-x:auto;white-space:nowrap}
+  .cmd code b{color:#FFA94D;font-weight:500}
+  .cmd button{font:600 12px var(--font);background:transparent;color:var(--code-ink);border:1px solid var(--code-rule);border-radius:6px;padding:4px 9px;cursor:pointer}
+  .alt{margin:10px 0 0;font-size:13px;color:var(--faint);overflow-wrap:anywhere}
+
+  .shot{border:1px solid var(--rule);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);background:var(--card);position:relative}
+  .shot video{width:100%;aspect-ratio:1440/900;object-fit:cover}
+  .live{position:absolute;top:10px;right:10px;display:flex;align-items:center;gap:6px;font:500 11px var(--mono);color:#F4F6FA;background:rgba(11,13,18,.78);border-radius:999px;padding:4px 10px}
+  .live i{width:6px;height:6px;border-radius:50%;background:#3DDBC2;animation:pulse 1.6s ease-in-out infinite}
+  @keyframes pulse{50%{opacity:.25}}
+  .stepcap{display:flex;gap:10px;align-items:center;margin-top:10px;font:12px var(--mono);color:var(--faint);min-height:18px}
+  .stepcap .bar{flex:none;width:90px;height:3px;border-radius:3px;background:var(--rule);overflow:hidden}
+  .stepcap .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+  .stepcap b{font-weight:500;color:var(--ink)}
+
+  .feats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding-block:28px}
+  .feat{background:var(--card);border:1px solid var(--rule);border-radius:12px;overflow:hidden;display:grid;grid-template-rows:auto 1fr;transition:transform .15s,box-shadow .15s}
+  .feat:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+  .feat video,.feat img{width:100%;aspect-ratio:16/10;object-fit:cover;border-bottom:1px solid var(--rule);background:var(--bg)}
+  .feat div{padding:14px 16px 16px}
+  .feat h2{margin:0;font-size:16px}
+  .feat p{margin:6px 0 0;color:var(--dim);font-size:14px}
+
+  .how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding-block:20px 36px;border-top:1px solid var(--rule)}
+  .how h3{margin:16px 0 4px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+  .how p{margin:0;color:var(--dim);font-size:14.5px}
+  .how code{font:13px var(--mono);color:var(--ink)}
+
+  footer{border-top:1px solid var(--rule);padding-block:18px 28px;font:12px var(--mono);color:var(--faint);display:flex;gap:8px 18px;flex-wrap:wrap}
+  footer a{color:var(--dim)}
+
+  @media (max-width:820px){ .hero,.feats,.how{grid-template-columns:minmax(0,1fr)} nav a.hide{display:none} }
+  @media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="in">
+  <nav>
+    <a class="mark" href="./" aria-label="draw-c4 home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><path d="M10 6.5h4.5a2 2 0 0 1 2 2V14" stroke="var(--accent)"/></svg>DRAW-C4</a>
+    <a class="ver" id="ver" href="https://github.com/ShibaInu0817/draw-c4-skill/commits/main" title="What changed">v0.2.0</a>
+    <span class="sp"></span>
+    <a class="link hide" href="examples/immich/architecture.html">Example</a>
+    <a class="link hide" href="https://github.com/ShibaInu0817/draw-c4-skill#install">Install</a>
+    <a class="link" href="https://github.com/ShibaInu0817/draw-c4-skill">GitHub</a>
+  </nav>
 
-  <header>
-    <h1>draw-c4</h1>
-    <p class="tag">interactive C4 architecture diagrams</p>
-    <p class="lede">
-      A Claude Code skill that reads a codebase and writes a single HTML file you can
-      drill into. These are diagrams it produced, hosted so you can try them before
-      installing anything.
-    </p>
-  </header>
-
-  <section>
-    <h2>Examples</h2>
-    <a class="card" href="examples/immich/architecture.html">
-      <img src="docs/containers.png" alt="The container level of the Immich diagram">
-      <div class="card-body">
-        <b>Immich</b>
-        <span>4 levels · 44 parts · 4 runtime flows</span>
-        <p>
-          Self-hosted photo and video backup. Pick a flow from the left rail to watch an
-          upload move from the phone through the queue to a searchable embedding.
-        </p>
+  <section class="hero">
+    <div>
+      <h1>Point it at a repo. <em>Get a diagram you can walk through.</em></h1>
+      <p class="lede">A Claude Code skill that reads your code and writes one HTML file: C4 levels you can open, an inspector for every part, and runtime flows that play one hop at a time.</p>
+      <div class="cta">
+        <a class="btn pri" href="examples/immich/architecture.html">Open the Immich example →</a>
+        <a class="btn" href="https://github.com/ShibaInu0817/draw-c4-skill">View on GitHub</a>
       </div>
-    </a>
+      <div class="cmd"><code id="cmd"><b>$</b> npx skills@latest add ShibaInu0817/draw-c4-skill -g</code><button type="button" id="copy">Copy</button></div>
+      <p class="alt">Or as a plugin that updates itself: <code>/plugin install draw-c4@draw-c4-skill</code></p>
+    </div>
+    <div>
+      <div class="shot">
+        <video id="hero" data-clip="flow" muted loop playsinline preload="auto" aria-label="The Immich diagram playing the photo upload flow, one step at a time"></video>
+        <span class="live"><i></i>Back up a photo</span>
+      </div>
+      <p class="stepcap" aria-live="off"><span class="bar"><i id="bar"></i></span><span id="step">Step 1 of 12 · <b>Upload posted</b></span></p>
+    </div>
+  </section>
+
+  <section class="feats">
+    <article class="feat"><video data-clip="drill" muted loop playsinline aria-label="Opening the job worker from the container level"></video><div><h2>Open any part</h2><p>Start at the containers and double-click into the ones with something inside. Up to four levels.</p></div></article>
+    <article class="feat"><video data-clip="faces" muted loop playsinline aria-label="The face clustering flow stepping through the job worker"></video><div><h2>Play a request</h2><p>Flows are grouped by area. Each step lights one line and says what the code does there, failures included.</p></div></article>
+    <article class="feat"><img data-still="inspector" alt="The inspector showing SmartInfoService, what it talks to and what calls it"><div><h2>Ask what a part does</h2><p>The inspector lists what each part talks to and who calls it, read from the real code.</p></div></article>
+  </section>
+
+  <section class="how">
+    <div><h3>Ask</h3><p>"Diagram this codebase." The skill asks which flows and levels you want.</p></div>
+    <div><h3>It reads the code</h3><p>Compose files, modules, queues and handlers, not the README.</p></div>
+    <div><h3>You get two files</h3><p><code>architecture.html</code> to open and share, and <code>model.json</code> to update it next time.</p></div>
   </section>
 
   <footer>
+    <span>MIT</span>
     <a href="https://github.com/ShibaInu0817/draw-c4-skill">github.com/ShibaInu0817/draw-c4-skill</a>
+    <span>The Immich example is unofficial and not endorsed by the Immich project.</span>
   </footer>
-
 </div>
+
+<script>
+// The clips come in a dark and a light cut; load the one matching the page theme.
+const STEPS = ["Upload posted","Original written","Metadata job queued","Worker picks it up","Thumbnails written","Second wave queued","Fan-out runs","Embedding requested","Embedding stored","Client event published","Handed to the socket server","Photo appears"];
+const HOLD = 1.5; // seconds per step in docs/clips/flow-*.mp4
+const dark = matchMedia('(prefers-color-scheme: dark)');
+const still = matchMedia('(prefers-reduced-motion: reduce)');
+function theme(){
+  const t = document.documentElement.dataset.theme;
+  return t === 'dark' || t === 'light' ? t : (dark.matches ? 'dark' : 'light');
+}
+function load(){
+  const t = theme();
+  document.querySelectorAll('video[data-clip]').forEach(v => {
+    const src = `docs/clips/${v.dataset.clip}-${t}.mp4`;
+    if (v.getAttribute('src') === src) return;
+    v.poster = v.dataset.clip === 'flow' ? `docs/clips/flow-${t}.jpg` : '';
+    v.src = src;
+    if (!still.matches) v.play().catch(() => {});
+  });
+  document.querySelectorAll('img[data-still]').forEach(i => i.src = `docs/clips/${i.dataset.still}-${t}.jpg`);
+}
+load();
+dark.addEventListener('change', load);
+
+const hero = document.getElementById('hero'), bar = document.getElementById('bar'), step = document.getElementById('step');
+let shown = -1;
+hero.addEventListener('timeupdate', () => {
+  const i = Math.min(STEPS.length - 1, Math.floor((hero.currentTime + 0.2) / HOLD));
+  if (i === shown) return;
+  shown = i;
+  bar.style.width = ((i + 1) / STEPS.length * 100) + '%';
+  step.innerHTML = `Step ${i + 1} of ${STEPS.length} · <b>${STEPS[i]}</b>`;
+});
+if (still.matches) document.querySelectorAll('video').forEach(v => { v.controls = true; });
+
+// Read the version from the plugin manifest so the badge never goes stale; the markup holds a fallback.
+fetch('.claude-plugin/plugin.json').then(r => r.json()).then(m => { if (m.version) document.getElementById('ver').textContent = 'v' + m.version; }).catch(() => {});
+
+document.getElementById('copy').onclick = e => {
+  const btn = e.currentTarget, text = document.getElementById('cmd').textContent.replace(/^\$\s*/, '').trim();
+  const done = () => { btn.textContent = 'Copied'; setTimeout(() => btn.textContent = 'Copy', 1400); };
+  try { navigator.clipboard.writeText(text).then(done, () => {}); } catch (_) {}
+};
+</script>
 </body>
 </html>
