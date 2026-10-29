@@ -1,0 +1,25 @@
+WEBVTT
+
+00:00.450 --> 00:04.850
+Every codebase has a shape. Most of us never get to see it.
+
+00:04.850 --> 00:10.735
+Type /draw-c4. It reads the source: routes, configs, queues.
+
+00:12.350 --> 00:17.250
+Then it writes one HTML file. Your system, as a map.
+
+00:17.250 --> 00:20.831
+Double-click a box to open what’s inside.
+
+00:22.450 --> 00:28.305
+Press play, and follow one request, hop by hop, through the code that handles it.
+
+00:31.550 --> 00:35.520
+Each step carries the real details from the code.
+
+00:36.850 --> 00:40.928
+Dark or light. One file. Open it anywhere.
+
+00:41.550 --> 00:46.706
+draw-c4. A Claude Code skill. Install it, and see your code.

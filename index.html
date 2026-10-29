@@ -81,6 +81,10 @@
   .stepcap .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
   .stepcap b{font-weight:500;color:var(--ink)}
 
+  .film{padding-block:28px 0}
+  .film h2{margin:0 0 12px;font-size:16px}
+  .film .shot video{aspect-ratio:16/9;object-fit:contain;background:#000}
+
   .feats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding-block:28px}
   .feat{background:var(--card);border:1px solid var(--rule);border-radius:12px;overflow:hidden;display:grid;grid-template-rows:auto 1fr;transition:transform .15s,box-shadow .15s}
   .feat:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
@@ -119,6 +123,7 @@
       <div class="cta">
         <a class="btn pri" href="examples/immich/architecture.html">Open the Immich example →</a>
         <a class="btn" href="https://github.com/ShibaInu0817/draw-c4-skill">View on GitHub</a>
+        <a class="btn" href="#film">▶ Watch the film</a>
       </div>
       <div class="cmd"><code id="cmd"><b>$</b> npx skills@latest add ShibaInu0817/draw-c4-skill -g</code><button type="button" id="copy">Copy</button></div>
       <p class="alt">Or as a plugin that updates itself: <code>/plugin install draw-c4@draw-c4-skill</code></p>
@@ -129,6 +134,15 @@
         <span class="live"><i></i>Back up a photo</span>
       </div>
       <p class="stepcap" aria-live="off"><span class="bar"><i id="bar"></i></span><span id="step">Step 1 of 12 · <b>Upload posted</b></span></p>
+    </div>
+  </section>
+
+  <section class="film" id="film">
+    <h2>See it in 47 seconds</h2>
+    <div class="shot">
+      <video controls playsinline preload="none" poster="docs/film/poster.jpg" src="https://github.com/user-attachments/assets/92fef809-afb6-4116-90e9-334f3b024af3" aria-label="A 47-second narrated film of draw-c4 turning a codebase into a diagram">
+        <track kind="captions" srclang="en" label="English" src="docs/film/draw-c4-film.vtt">
+      </video>
     </div>
   </section>
 

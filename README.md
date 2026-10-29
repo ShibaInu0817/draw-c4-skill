@@ -16,6 +16,8 @@ The output has:
 
 Everything lives in one HTML file you can open in any browser, commit, or share.
 
+https://github.com/user-attachments/assets/92fef809-afb6-4116-90e9-334f3b024af3
+
 ---
 
 ## Example
